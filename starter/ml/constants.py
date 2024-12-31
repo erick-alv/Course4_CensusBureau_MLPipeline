@@ -1,4 +1,4 @@
-cat_features = [ #TODO better in separate file with constants
+cat_features = [
     "workclass",
     "education",
     "marital-status",
