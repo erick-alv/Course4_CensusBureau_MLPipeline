@@ -3,20 +3,22 @@ from starter.ml.data import process_data
 from starter.ml.model import load_component, inference, compute_model_metrics
 from starter.ml.constants import cat_features
 import pandas as pd
-
-
+import logging
 def slice_testing(model, encoder, lb, test_data):
     for cat_f in cat_features:
-        print(f"======= Performing test on feature {cat_f} =======")
-        for value in test_data[cat_f].unique():
-            print(f"Metrics on slice '{cat_f} = {value}':")
-            test_slice = test_data[test_data[cat_f] == value]
-            X_test, y_test, _, _ = process_data(
-                test_slice, categorical_features=cat_features, label="salary", training=False, encoder=encoder, lb=lb
-            )
-            preds = inference(model, X_test)
-            precision, recall, fbeta = compute_model_metrics(y_test, preds)
-            print(f"precision: {precision}\nrecall: {recall}\nF1: {fbeta}")
+        logging.info(f"======= Performing test on feature {cat_f} =======")
+        feature_slices_testing(model, encoder, lb, test_data, cat_f)
+
+def feature_slices_testing(model, encoder, lb, test_data, feature):
+    for value in test_data[feature].unique():
+        logging.info(f"Metrics on slice '{feature} = {value}':")
+        test_slice = test_data[test_data[feature] == value]
+        X_test, y_test, _, _ = process_data(
+            test_slice, categorical_features=cat_features, label="salary", training=False, encoder=encoder, lb=lb
+        )
+        preds = inference(model, X_test)
+        precision, recall, fbeta = compute_model_metrics(y_test, preds)
+        logging.info(f"precision: {precision}\nrecall: {recall}\nF1: {fbeta}")
 
 
 def overall_performance(model, encoder, lb, test_data):
@@ -25,8 +27,8 @@ def overall_performance(model, encoder, lb, test_data):
     )
     preds = inference(model, X_test)
     precision, recall, fbeta = compute_model_metrics(y_test, preds)
-    print("Overall model performance:")
-    print(f"precision: {precision}\nrecall: {recall}\nF1: {fbeta}")
+    logging.info("Overall model performance:")
+    logging.info(f"precision: {precision}\nrecall: {recall}\nF1: {fbeta}")
 
 
 def main(model_path, encoder_path, lb_path, test_split_path):
@@ -40,6 +42,15 @@ def main(model_path, encoder_path, lb_path, test_split_path):
     overall_performance(model, encoder, lb, test_data)
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(message)s",
+        handlers=[
+            logging.FileHandler("../model/slice_output.txt"),
+            logging.StreamHandler()
+        ]
+    )
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, required=True, help="The path to the trained model")
     parser.add_argument("--encoder_path", type=str, required=True, help="The path to the one hot encoder")
