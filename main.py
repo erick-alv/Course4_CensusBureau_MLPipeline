@@ -8,18 +8,7 @@ import joblib
 import pandas as pd
 from starter.ml.data import process_data
 from starter.ml.model import inference
-
-
-cat_features = [ #TODO better in separate file with constants
-    "workclass",
-    "education",
-    "marital-status",
-    "occupation",
-    "relationship",
-    "race",
-    "sex",
-    "native-country",
-]
+from starter.ml.constants import cat_features
 
 model = None
 encoder = None
@@ -38,7 +27,6 @@ version = "0.1.0" # TODO when finished make it 1.0.0
 app = FastAPI(title=title, description=description, version=version)#TODO write example for API
 
 
-#TODO at the beginning giving:  404 Not Found
 @app.get("/")
 async def hello():
     return {"Hello, this API helps predict if the income is grater than 50K"}

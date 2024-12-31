@@ -5,8 +5,8 @@ from sklearn.model_selection import train_test_split
 # Add the necessary imports for the starter code.
 import pandas as pd
 from ml.data import process_data
-from ml.model import train_model, compute_model_metrics, inference
-import joblib
+from ml.model import train_model, compute_model_metrics, inference, save_component
+from ml.constants import cat_features
 
 # Add code to load in the data.
 
@@ -15,16 +15,7 @@ data = pd.read_csv("../data/clean_census.csv")
 # Optional enhancement, use K-fold cross validation instead of a train-test split.
 train, test = train_test_split(data, test_size=0.20)
 
-cat_features = [ #TODO better in separate file with constants
-    "workclass",
-    "education",
-    "marital-status",
-    "occupation",
-    "relationship",
-    "race",
-    "sex",
-    "native-country",
-]
+
 
 X_train, y_train, encoder, lb = process_data(
     train, categorical_features=cat_features, label="salary", training=True
@@ -40,11 +31,12 @@ model = train_model(X_train, y_train)
 preds = inference(model, X_test)
 precision, recall, fbeta = compute_model_metrics(y_test, preds)
 
-print(precision, recall, fbeta)
+print("Model performance:")
+print(f"precision: {precision}\nrecall: {recall}\nF1: {fbeta}")
 #todo save model + lb(?) + encoder
 
-joblib.dump(model, "../model/model.pkl")
-joblib.dump(encoder, "../model/encoder.pkl")
+save_component(model, "../model/model.pkl")
+save_component(encoder, "../model/encoder.pkl")
 
 # TODO
 # Write unit tests for at least 3 functions in the model code.

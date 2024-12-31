@@ -1,5 +1,7 @@
+import joblib
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.linear_model import LogisticRegression
+import joblib
 
 
 # Optional: implement hyperparameter tuning.
@@ -61,3 +63,11 @@ def inference(model, X):
         Predictions from the model.
     """
     return model.predict(X)
+
+
+def save_component(component, path):
+    joblib.dump(component, path)
+
+
+def load_component(path):
+    return joblib.load(path)
